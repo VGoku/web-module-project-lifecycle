@@ -14,17 +14,21 @@ export default class App extends React.Component {
     //debugger
     this.setState({ ...this.state, todoNameInput: value })
   }
+
+  resetForm = () => this.setState({ ...this.state, todoNameInput: '' })
+  setAxiosResponseError = err =>  this.setState({ ...this.state, error: err.response.data.message })
   postNewTodo = () => {
     axios.post(URL, { name: this.state.todoNameInput })
     .then(res => {
       //debugger
-      this.fetchAllTodos()
-      this.setState({ ...this.state, todoNameInput: '' })
+      //this.fetchAllTodos()
+      this.setState({...this.state, todos: this.state.todos.concat(res.data.data) })
+      this.resetForm()
     })
-    .catch(err => {
+    .catch(this.setAxiosResponseError)
       //debugger
-      this.setState({ ...this.state, error: err.response.data.message })
-    })
+     
+    
   }
   onTodoFormSubmit = evt => {
     evt.preventDefault()
@@ -36,11 +40,9 @@ export default class App extends React.Component {
         //debugger
         this.setState({ ...this.state, todos: res.data.data })
       })
-      .catch(err => {
+      .catch(this.setAxiosResponseError)
         //debugger
-        this.setState({ ...this.state, error: err.response.data.message })
-
-      })
+       
   }
   componentDidMount() {
     // fetch all todos from server.
